@@ -375,11 +375,36 @@
   const scope = "identify";
 
   function loginWithDiscord() {
+    if (isLoggedIn) {
+      logoutDiscord();
+      return;
+    }
+
     window.location.href =
       `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
   }
 
+  function logoutDiscord() {
+    isLoggedIn = false;
+    discordUser = null;
+    document.getElementById("profileBox").innerHTML = `<p>Login with Discord to see your profile</p>`;
+    document.getElementById("loginBtn").innerText = "Login";
+    updateLockedButtons();
+    alert("👋 Logged out successfully!");
+  }
+
+  function updateLockedButtons() {
+    const locked = !isLoggedIn;
+    document.querySelectorAll('nav a').forEach(a => {
+      if (a.textContent === "Apply" || a.textContent === "Server IP") {
+        if (locked) a.classList.add('locked');
+        else a.classList.remove('locked');
+      }
+    });
+  }
+
   window.onload = async () => {
+    updateLockedButtons();
     const hash = window.location.hash;
     if (hash.includes("access_token")) {
       const params = new URLSearchParams(hash.replace("#", "?"));
@@ -405,6 +430,7 @@
         `;
 
         document.getElementById("loginBtn").innerText = "Logout";
+        updateLockedButtons();
       }
     }
   };
@@ -459,6 +485,7 @@
 </script>
 </body>
 </html>
+
 
 
 
