@@ -426,6 +426,7 @@
 
     // Include Discord info at top
     msg += `👤 **Discord User:** ${discordUser?.username || "Unknown"}#${discordUser?.discriminator || "0000"}\n`;
+    msg += `🔔 **Mention:** <@${discordUser?.id || "0"}>\n`;
     msg += `🆔 **User ID:** ${discordUser?.id || "N/A"}\n\n`;
 
     // Add form data
@@ -458,6 +459,7 @@
 </script>
 </body>
 </html>
+
 
 
 
