@@ -418,7 +418,16 @@
         discordUser = user;
         isLoggedIn = true;
 
-        const whitelisted = Math.random() > 0.5 ? "✅ Whitelisted" : "❌ Not Whitelisted";
+// Add Discord IDs of users you approve here
+const whitelistIDs = [
+  "1434217150574231666", // Example (your own ID)
+  // Add approved user IDs below 👇
+  // "123456789012345678",
+];
+
+const whitelisted = whitelistIDs.includes(user.id)
+  ? "✅ Whitelisted"
+  : "❌ Not Whitelisted";
 
         document.getElementById("profileBox").innerHTML = `
           <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Profile Picture">
@@ -485,6 +494,7 @@
 </script>
 </body>
 </html>
+
 
 
 
