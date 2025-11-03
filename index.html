@@ -358,16 +358,30 @@
   let isLoggedIn = false;
   let discordUser = null; // will store user data after login
 
-  function showSection(id) {
-    // Restrict Apply and Server IP unless logged in
-    if (!isLoggedIn && (id === 'apply' || id === 'serverip')) {
-      alert("🔒 Please log in with Discord to access this section!");
+function showSection(id) {
+  // If not logged in, block both Apply and Server IP
+  if (!isLoggedIn && (id === 'apply' || id === 'serverip')) {
+    alert("🔒 Please log in with Discord to access this section!");
+    return;
+  }
+
+  // If viewing Server IP — check whitelist
+  if (id === 'serverip') {
+    const whitelistIDs = [
+      "1434217150574231666", // Example (your own ID)
+      "1424114186929045637", // ✅ Approved user
+    ];
+
+    if (!discordUser || !whitelistIDs.includes(discordUser.id)) {
+      alert("🚫 Only whitelisted users can view the Server IP!");
       return;
     }
-
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
   }
+
+  // Show the requested section
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
   // Discord OAuth2
   const clientId = "1434242083425878086";
@@ -493,6 +507,7 @@ const whitelisted = whitelistIDs.includes(user.id)
 </script>
 </body>
 </html>
+
 
 
 
