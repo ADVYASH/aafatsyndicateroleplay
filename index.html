@@ -355,31 +355,43 @@
   <footer>© 2025 AAFAT GAMING | All Rights Reserved</footer>
 
 <script>
+  let isLoggedIn = false;
+  let discordUser = null; // will store user data after login
+
   function showSection(id) {
-    document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+    // Restrict Apply and Server IP unless logged in
+    if (!isLoggedIn && (id === 'apply' || id === 'serverip')) {
+      alert("🔒 Please log in with Discord to access this section!");
+      return;
+    }
+
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // Discord OAuth2
+  const clientId = "1434242083425878086";
+  const redirectUri = "https://aafatsyndicateroleplay.fun/";
+  const scope = "identify";
+
+  function loginWithDiscord() {
+    window.location.href =
+      `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
   }
 
   window.onload = async () => {
-    // --- Discord OAuth2 Setup ---
-    const clientId = "1434242083425878086";
-    const redirectUri = "https://aafatsyndicateroleplay.fun/";
-    const scope = "identify";
-
-    window.loginWithDiscord = function () {
-      window.location.href =
-        `https://discord.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
-    };
-
     const hash = window.location.hash;
     if (hash.includes("access_token")) {
       const params = new URLSearchParams(hash.replace("#", "?"));
       const token = params.get("access_token");
+
       if (token) {
         const res = await fetch("https://discord.com/api/users/@me", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
         const user = await res.json();
+        discordUser = user;
+        isLoggedIn = true;
 
         const whitelisted = Math.random() > 0.5 ? "✅ Whitelisted" : "❌ Not Whitelisted";
 
@@ -391,47 +403,61 @@
             <p><span>Status:</span> ${whitelisted}</p>
           </div>
         `;
+
         document.getElementById("loginBtn").innerText = "Logout";
-        document.getElementById("loginBtn").onclick = () => {
-          window.location.href = redirectUri;
-        };
       }
     }
-
-    // --- Send Form to Discord Webhook ---
-    const form = document.getElementById("applicationForm");
-    const responseBox = document.getElementById("response");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const data = new FormData(form);
-      let msg = "";
-      data.forEach((val, key) => (msg += `**${key.toUpperCase()}**: ${val}\n`));
-
-      const payload = {
-        content: "📝 **New Minecraft Application!**",
-        embeds: [{ title: "Application Details", description: msg, color: 0xff0055 }],
-      };
-
-      try {
-        await fetch(
-          "https://discord.com/api/webhooks/1434217150574231666/FXevYWO_oEyDFecdIYT5q4EGPBKwmnQE4ubd_fOJ9tfRJzT5MPQBINgZQo8SfsOf53ST",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
-        responseBox.textContent = "✅ Application sent successfully!";
-        form.reset();
-      } catch {
-        responseBox.textContent = "❌ Error sending to Discord.";
-      }
-    });
   };
+
+  // Send form to Discord Webhook
+  const form = document.getElementById("applicationForm");
+  const responseBox = document.getElementById("response");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!isLoggedIn) {
+      alert("🔒 Please log in with Discord before submitting your application!");
+      return;
+    }
+
+    const data = new FormData(form);
+    let msg = "";
+
+    // Include Discord info at top
+    msg += `👤 **Discord User:** ${discordUser?.username || "Unknown"}#${discordUser?.discriminator || "0000"}\n`;
+    msg += `🆔 **User ID:** ${discordUser?.id || "N/A"}\n\n`;
+
+    // Add form data
+    data.forEach((val, key) => (msg += `**${key.toUpperCase()}**: ${val}\n`));
+
+    const payload = {
+      content: "📝 **New Minecraft Application Submitted!**",
+      embeds: [
+        {
+          title: "Application Details",
+          description: msg,
+          color: 0xff0055,
+        },
+      ],
+    };
+
+    try {
+      await fetch("https://discord.com/api/webhooks/1434217150574231666/FXevYWO_oEyDFecdIYT5q4EGPBKwmnQE4ubd_fOJ9tfRJzT5MPQBINgZQo8SfsOf53ST", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      responseBox.textContent = "✅ Application sent successfully!";
+      form.reset();
+    } catch {
+      responseBox.textContent = "❌ Error sending to Discord.";
+    }
+  });
 </script>
 </body>
 </html>
+
 
 
