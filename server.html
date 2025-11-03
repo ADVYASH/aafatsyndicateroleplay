@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aafat Syndicate Roleplay | Minecraft Server</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background: radial-gradient(circle at center, #0a0a0a, #000);
+      color: #00ff9d;
+      text-align: center;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .background {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(90deg, #0f0f0f 0px, #0f0f0f 1px, transparent 1px, transparent 50px),
+                  repeating-linear-gradient(0deg, #0f0f0f 0px, #0f0f0f 1px, transparent 1px, transparent 50px);
+      animation: move 10s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes move {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 50px 50px, 50px 50px; }
+    }
+
+    header {
+      padding-top: 70px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #00ff9d, 0 0 20px #00ff9d; }
+      to { text-shadow: 0 0 20px #00ff9d, 0 0 40px #00ff9d; }
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #00ffcc;
+      margin-bottom: 20px;
+    }
+
+    .ip-box {
+      background: rgba(0, 255, 150, 0.1);
+      border: 2px solid #00ff9d;
+      display: inline-block;
+      padding: 15px 25px;
+      border-radius: 10px;
+      margin: 20px auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .ip-box:hover {
+      background: #00ff9d;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00ff9d;
+    }
+
+    #statusBox {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #00ffc8;
+    }
+
+    .buttons {
+      margin-top: 30px;
+    }
+
+    button {
+      background: none;
+      border: 2px solid #00ff9d;
+      color: #00ff9d;
+      padding: 12px 25px;
+      border-radius: 10px;
+      margin: 10px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #00ff9d;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00ff9d;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      font-size: 10px;
+      color: #00ffcc;
+    }
+
+    .minecraft {
+      margin-top: 40px;
+      font-size: 12px;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .online {
+      color: #00ff7f;
+      text-shadow: 0 0 10px #00ff7f;
+    }
+
+    .offline {
+      color: #ff5555;
+      text-shadow: 0 0 10px #ff5555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background"></div>
+
+  <header>
+    <h1>🎮 Aafat Syndicate Roleplay 🎮</h1>
+    <p>Minecraft Server | Join the Syndicate!</p>
+  </header>
+
+  <div class="ip-box" id="serverIP">
+    play.aafatsyndicateroleplay.fun
+  </div>
+
+  <div id="statusBox">Checking server status...</div>
+
+  <div class="buttons">
+    <button onclick="copyIP()">📋 Copy IP</button>
+    <button onclick="window.open('https://discord.gg/YOUR_DISCORD_INVITE', '_blank')">💬 Join Discord</button>
+    <button onclick="window.open('minecraft://?addExternalServer=Aafat%20Syndicate%20Roleplay|play.aafatsyndicateroleplay.fun', '_blank')">🟩 Open in Minecraft</button>
+  </div>
+
+  <div class="minecraft">🧱 Explore | Build | Roleplay | Survive 🧱</div>
+
+  <footer>© 2025 Aafat Syndicate Roleplay | All Rights Reserved</footer>
+
+  <script>
+    function copyIP() {
+      const ip = "play.aafatsyndicateroleplay.fun";
+      navigator.clipboard.writeText(ip);
+      alert("✅ Server IP copied: " + ip);
+    }
+
+    async function checkServerStatus() {
+      const statusBox = document.getElementById('statusBox');
+      try {
+        const response = await fetch("https://api.mcsrvstat.us/2/play.aafatsyndicateroleplay.fun");
+        const data = await response.json();
+
+        if (data.online) {
+          const players = data.players.online || 0;
+          const max = data.players.max || 0;
+          statusBox.innerHTML = `🟢 <span class="online">Online</span> | Players: ${players}/${max}`;
+        } else {
+          statusBox.innerHTML = `🔴 <span class="offline">Offline</span>`;
+        }
+      } catch (error) {
+        statusBox.innerHTML = `⚠️ <span class="offline">Error fetching status</span>`;
+      }
+    }
+
+    // Check status every 30 seconds
+    checkServerStatus();
+    setInterval(checkServerStatus, 30000);
+  </script>
+
+</body>
+</html>
